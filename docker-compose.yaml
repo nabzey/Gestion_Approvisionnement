@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: Gestion_approvisonnements_back_app
+    env_file:
+      - .env
+    ports:
+      - "5000:5000"
+    environment:  
+      DATABASE_URL: postgres://zeynab:nouveaumotdepasse@postgres:5432/Gestion_approvisonnements?schema=public
+      CLOUDINARY_FOLDER:  
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: Gestion_approvisonnements_postgres
+    ports:
+      - "55433:5432"
+    environment:
+      POSTGRES_DB: Gestion_approvisonnements
+      POSTGRES_USER: zeynab
+      POSTGRES_PASSWORD: nouveaumotdepasse
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zeynab -d  Gestion_approvisonnements"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pg_data:

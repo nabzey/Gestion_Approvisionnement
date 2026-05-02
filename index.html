@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Gestion des Approvisionnements - Documentation</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { background: white; border-radius: 20px; padding: 40px; margin: 20px 0; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        h1 { color: #764ba2; font-size: 3em; margin-bottom: 10px; }
+        .subtitle { color: #667eea; font-size: 1.2em; margin-bottom: 20px; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+        .card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .card h3 { color: #764ba2; font-size: 1.5em; margin-bottom: 15px; }
+        .card h4 { color: #667eea; font-size: 1.1em; margin: 15px 0 10px; }
+        .card ul { list-style: none; padding: 0; }
+        .card li { padding: 8px 0; border-bottom: 1px solid #eee; color: #555; }
+        .card li:before { content: '📌'; margin-right: 10px; }
+        .endpoint { background: #f8f9fa; padding: 15px; border-radius: 10px; margin: 10px 0; border-left: 4px solid #764ba2; }
+        .method { display: inline-block; background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
+        .code { background: #2d3748; color: #e2e8f0; padding: 20px; border-radius: 10px; font-family: 'Courier New', monospace; overflow-x: auto; margin: 10px 0; }
+        .feature { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 30px; border-radius: 15px; margin: 20px 0; }
+        .feature h2 { font-size: 2em; margin-bottom: 15px; }
+        footer { text-align: center; padding: 30px; color: white; margin-top: 40px; }
+        .highlight { color: #f5576c; font-weight: bold; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #764ba2; color: white; }
+        tr:hover { background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚚 API Gestion des Approvisionnements</h1>
+            <p class="subtitle">Node.js • Express • PostgreSQL • Cloudinary • Swagger</p>
+            <p>Projet de fin de module - Licence 3 Génie Logiciel - École Supérieure Professionnelle 221</p>
+            <p><strong>Étudiant :</strong> Mamadou Diouf</p>
+        </header>
+
+        <div class="feature">
+            <h2>📋 Contexte du Projet</h2>
+            <p>Réalisation d'une API RESTful avec Node.js et Express pour gérer les approvisionnements d'une boutique. L'application gère trois entités principales : Fournisseur, Produit et Approvisionnement.</p>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h3>🏭 Fournisseurs</h3>
+                <p>Gestion complète du cycle de vie des fournisseurs avec validation et recherche.</p>
+                <h4>Endpoints:</h4>
+                <ul>
+                    <li>POST /api/fournisseurs - Créer</li>
+                    <li>GET /api/fournisseurs - Liste</li>
+                    <li>GET /api/fournisseurs/:id - Détails</li>
+                    <li>PUT /api/fournisseurs/:id - Modifier</li>
+                    <li>DELETE /api/fournisseurs/:id - Supprimer</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📦 Produits</h3>
+                <p>Gestion du catalogue avec upload d'images sur Cloudinary et gestion des stocks.</p>
+                <h4>Endpoints:</h4>
+                <ul>
+                    <li>POST /api/produits - Créer (+ image)</li>
+                    <li>GET /api/produits - Liste</li>
+                    <li>GET /api/produits/:id - Détails</li>
+                    <li>PATCH /api/produits/:id/increment - + Stock</li>
+                    <li>PATCH /api/produits/:id/decrement - - Stock</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>📊 Approvisionnements</h3>
+                <p>Enregistrement des approvisionnements avec mise à jour automatique du stock.</p>
+                <h4>Endpoints:</h4>
+                <ul>
+                    <li>POST /api/approvisionnements - Créer</li>
+                    <li>GET /api/approvisionnements - Liste</li>
+                    <li>GET /api/approvisionnements/:id - Détails</li>
+                    <li>PUT /api/approvisionnements/:id - Modifier</li>
+                    <li>DELETE /api/approvisionnements/:id - Supprimer</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📐 Architecture du Projet</h3>
+            <div class="code">
+src/<br>
+├── config/<br>
+│   ├── db.js              # Connexion PostgreSQL<br>
+│   ├── env.js             # Variables d'environnement<br>
+│   ├── swagger.js         # Configuration Swagger<br>
+│   └── swagger-annotation.js<br>
+├── controllers/<br>
+│   ├── fournisseur.controller.js<br>
+│   ├── produit.controller.js<br>
+│   └── approvisionnement.controller.js<br>
+├── services/<br>
+│   ├── fournisseur.service.js<br>
+│   ├── produit.service.js<br>
+│   └── approvisionnement.service.js<br>
+├── repositories/<br>
+│   ├── BaseRepository.js  # Pattern Repository<br>
+│   ├── fournisseur.repo.js<br>
+│   ├── produit.repo.js<br>
+│   └── approvisionnement.repo.js<br>
+├── validations/<br>
+│   ├── common.schema.js<br>
+│   ├── fournisseur.schema.js<br>
+│   ├── produit.schema.js<br>
+│   └── approvisionnement.schema.js<br>
+├── middlewares/<br>
+│   ├── errorHandler.js<br>
+│   ├── notFound.js<br>
+│   └── validate.js<br>
+├── utils/<br>
+│   ├── constants.js<br>
+│   └── response.js<br>
+├── app.js                 # Configuration Express<br>
+└── server.js             # Point d'entrée<br>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🎯 Fonctionnalités Clés</h3>
+            <ul>
+                <li><span class="highlight">Upload Cloudinary</span> : Les images des produits sont uploadées sur Cloudinary via Multer</li>
+                <li><span class="highlight">Gestion du Stock</span> : Le stock est automatiquement mis à jour lors des approvisionnements</li>
+                <li><span class="highlight">Validation Joi</span> : Validation robuste des données avec Joi</li>
+                <li><span class="highlight">Architecture MVC</span> : Pattern Repository avec couche de service</li>
+                <li><span class="highlight">Swagger</span> : Documentation API complète avec Swagger UI</li>
+                <li><span class="highlight">Error Handling</span> : Gestion centralisée des erreurs</li>
+                <li><span class="highlight">Middleware Async</span> : Gestion des erreurs asynchrones</li>
+                <li><span class="highlight">Protection Stock</span> : Empêche les stocks négatifs (HTTP 400)</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h3>🚀 Démarrage Rapide</h3>
+            <div class="code">
+# Installation<br>
+npm install
+
+# Générer Prisma Client<br>
+npm run prisma:generate
+
+# Migration<br>
+npm run prisma:migrate
+
+# Développement<br>
+npm run dev
+
+# Production<br>
+npm start
+
+# Documentation Swagger<br>
+http://localhost:3000/api-docs
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>🔐 Variables d'Environnement</h3>
+            <table>
+                <tr><th>Variable</th><th>Description</th><th>Défaut</th></tr>
+                <tr><td>NODE_ENV</td><td>Environnement</td><td>development</td></tr>
+                <tr><td>PORT</td><td>Port du serveur</td><td>3000</td></tr>
+                <tr><td>DATABASE_URL</td><td>URL PostgreSQL</td><td>-</td></tr>
+                <tr><td>CLOUDINARY_*</td><td>Config Cloudinary</td><td>-</td></tr>
+                <tr><td>JWT_SECRET</td><td>Clé JWT</td><td>-</td></tr>
+                <tr><td>SWAGGER_ENABLED</td><td>Activer Swagger</td><td>true</td></tr>
+            </table>
+        </div>
+
+        <footer>
+            <p>© 2024 - Mamadou Diouf - ESP 221 - Licence 3 Génie Logiciel</p>
+            <p>API de Gestion des Approvisionnements - Node.js / Express</p>
+        </footer>
+    </div>
+</body>
+</html>
